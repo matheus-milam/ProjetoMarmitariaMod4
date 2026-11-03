@@ -1,0 +1,8 @@
+services:
+  backend:
+    build:
+      dockerfile: ../FrontEnd/devops/backend.Dockerfile
+  nginx:
+    volumes:
+      - ./FrontEnd/devops/marmitaria.conf:/etc/nginx/conf.d/default.conf:ro
+
