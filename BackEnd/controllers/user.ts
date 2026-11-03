@@ -31,3 +31,40 @@ export async function cadastrarUsuario(req: Request, res: Response) {
 		return res.status(500).json({ erro: "Erro interno do servidor" });
 	}
 }
+
+export async function listarUsuarios(req: Request, res: Response) {
+	try {
+		const pagina = Math.max(Number(req.query.pagina) || 1, 1);
+		const limite = Math.min(Math.max(Number(req.query.limite) || 10, 1), 100);
+
+		const { count, rows } = await UserModel.findAndCountAll({
+			limit: limite,
+			offset: (pagina - 1) * limite,
+			order: [["id", "ASC"]],
+		});
+
+		return res.json({
+			dados: rows.map((usuario) => usuario.converterParaResposta()),
+			pagina,
+			limite,
+			total: count,
+			totalPaginas: Math.ceil(count / limite),
+		});
+	} catch (erro) {
+		console.error(erro);
+		return res.status(500).json({ erro: "Erro interno do servidor" });
+	}
+}
+
+export async function buscarUsuarioPorId(req: Request, res: Response) {
+	try {
+		const usuario = await UserModel.findByPk(Number(req.params.id));
+		if (!usuario) {
+			return res.status(404).json({ erro: "Usuário não encontrado" });
+		}
+		return res.json(usuario.converterParaResposta());
+	} catch (erro) {
+		console.error(erro);
+		return res.status(500).json({ erro: "Erro interno do servidor" });
+	}
+}

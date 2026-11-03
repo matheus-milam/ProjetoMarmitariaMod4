@@ -13,6 +13,7 @@ app.get("/", (req, res) => {
 
 app.use(userRouter);
 
+
 async function iniciar() {
     try {
         await connectToDB();
